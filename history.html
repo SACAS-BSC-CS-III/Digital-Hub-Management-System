@@ -167,62 +167,63 @@
                         </div>
                     </div>
                 </div>
-
-            </div>
-        </nav>
+            </nav>
+            
+        
         <!-- Navbar End -->
 
-        <div class="history-container">
-            <header class="history-header">
-                <h1><i class="fas fa-file-invoice-dollar"></i> Bill History</h1>
-                <div class="history-controls">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchCustomer" placeholder="Search customer...">
+            <div class="history-container">
+                <header class="history-header">
+                    <h1><i class="fas fa-file-invoice-dollar"></i> Bill History</h1>
+                    <div class="history-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchCustomer" placeholder="Search customer...">
+                        </div>
+                        <div class="date-filter">
+                            <label for="searchDate"><i class="fas fa-calendar-alt"></i></label>
+                            <input type="date" id="searchDate">
+                        </div>
+                        <button class="refresh-btn" onclick="renderBillHistory()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
                     </div>
-                    <div class="date-filter">
-                        <label for="searchDate"><i class="fas fa-calendar-alt"></i></label>
-                        <input type="date" id="searchDate">
+                </header>
+        
+                <div class="bill-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Customer</th>
+                                <th>Services</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billHistory"></tbody>
+                    </table>
+                </div>
+        
+                <div class="history-stats">
+                    <div class="stat-card">
+                        <span>Total Bills</span>
+                        <strong id="totalBills">0</strong>
                     </div>
-                    <button class="refresh-btn" onclick="renderBillHistory()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            </header>
-    
-            <div class="bill-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>Customer</th>
-                            <th>Services</th>
-                            <th>Total</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="billHistory"></tbody>
-                </table>
-            </div>
-    
-            <div class="history-stats">
-                <div class="stat-card">
-                    <span>Total Bills</span>
-                    <strong id="totalBills">0</strong>
-                </div>
-                <div class="stat-card">
-                    <span>Total Revenue</span>
-                    <strong id="totalRevenue">₹0</strong>
-                </div>
-                <div class="stat-card">
-                    <span>Today's Bills</span>
-                    <strong id="todaysBills">0</strong>
+                    <div class="stat-card">
+                        <span>Total Revenue</span>
+                        <strong id="totalRevenue">₹0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Today's Bills</span>
+                        <strong id="todaysBills">0</strong>
+                    </div>
                 </div>
             </div>
-        </div>
 
         <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        
     </div>
 
     <!-- JavaScript Libraries -->
