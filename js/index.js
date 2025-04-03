@@ -21,7 +21,7 @@ document.getElementById('adminForm').addEventListener('submit', function(e) {
     if (adminId === "admin" && password === "admin123") {
         
         // Redirect to admin dashboard
-        window.location.href = "dashboard.html";
+        window.location.href = "admin.html";
     } else {
         alert("Invalid admin credentials. Please try again.");
     }
