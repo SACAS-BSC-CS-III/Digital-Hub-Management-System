@@ -1,284 +1,305 @@
-let selectedService = "";
-let services = [];
-let availableServices = JSON.parse(localStorage.getItem("availableServices")) || ["Xerox", "Printout", "Money Transfer", "Lamination", "Recharge", "Spiral"];
-let bills = JSON.parse(localStorage.getItem("bills")) || [];
+// script.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize services
+    const services = [
+        { name: 'Xerox', defaultAmount: 2 },
+        { name: 'Printout', defaultAmount: 5 },
+        { name: 'Money Transfer', defaultAmount: 10 },
+        { name: 'Lamination', defaultAmount: 15 },
+        { name: 'Recharge', defaultAmount: 0 }
+    ];
 
-function showPopupMessage(message) {
-    const popup = document.createElement("div");
-    popup.className = "popup-message";
-    popup.innerText = message;
-    document.body.appendChild(popup);
-    setTimeout(() => {
-        popup.remove();
-    }, 3000);
-}
-
-function renderServiceButtons() {
-    const serviceButtons = document.getElementById('serviceButtons');
-    serviceButtons.innerHTML = "";
-    availableServices.forEach(service => {
-        const btn = document.createElement("button");
-        btn.innerText = service;
-        btn.onclick = () => selectService(service, btn);
-        serviceButtons.appendChild(btn);
-    });
-}
-
-function selectService(service, button) {
-    document.querySelectorAll('#serviceButtons button').forEach(btn => btn.classList.remove('selected'));
-    button.classList.add('selected');
-    selectedService = service;
-    document.getElementById('amount').disabled = false;
-    document.getElementById('addServiceBtn').disabled = false;
-}
-
-function addService() {
-    const amount = parseFloat(document.getElementById('amount').value);
-    if (isNaN(amount) || amount <= 0) {
-        showPopupMessage("Please enter a valid amount.");
-        return;
-    }
-    services.push({ name: selectedService, price: amount });
-    document.getElementById('amount').value = "";
-    updateSelectedServices();
-    calculateTotal();
-}
-
-function updateSelectedServices() {
-    const selectedServicesTable = document.getElementById('selectedServices');
-    selectedServicesTable.innerHTML = "";
-    services.forEach((service, index) => {
-        const row = selectedServicesTable.insertRow();
-        const nameCell = row.insertCell();
-        const priceCell = row.insertCell();
-        const actionsCell = row.insertCell();
-        nameCell.textContent = service.name;
-        priceCell.textContent = service.price;
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove';
-        removeButton.onclick = () => removeService(index);
-        actionsCell.appendChild(removeButton);
-    });
-}
-
-function removeService(index) {
-    services.splice(index, 1);
-    updateSelectedServices();
-    calculateTotal();
-}
-
-function calculateTotal() {
-    let total = services.reduce((sum, s) => sum + s.price, 0);
-    document.getElementById('totalAmount').innerText = total;
-}
-
-function saveBill() {
-    const customerName = document.getElementById('customerName').value.trim();
-    if (!customerName) {
-        showPopupMessage("Please enter customer name.");
-        return;
-    }
-    if (services.length === 0) {
-        showPopupMessage("Cannot save an empty bill.");
-        return;
-    }
-    const total = parseFloat(document.getElementById('totalAmount').innerText);
-    const newBill = {
-        customerName: customerName,
-        date: new Date().toLocaleString(),
-        total: total,
-        services: [...services]
-    };
-    bills.push(newBill);
-    localStorage.setItem("bills", JSON.stringify(bills));
-    renderBillHistory();
-    services = [];
-    updateSelectedServices();
-    calculateTotal();
-    document.getElementById('customerName').value = "";
-    showPopupMessage("Bill saved successfully!");
-}
-
-function printBill(index) {
-    if (index < 0 || index >= bills.length) {
-        showPopupMessage("Invalid bill index.");
-        return;
-    }
-    const bill = bills[index];
-    if (!bill) {
-        showPopupMessage("Bill not found.");
-        return;
-    }
-    let printContent = `<h2>Bill Details</h2><p>Customer Name: ${bill.customerName}</p><p>Date: ${bill.date}</p><table border='1' style='border-collapse: collapse;'><tr><th>Service</th><th>Amount</th></tr>`;
-    bill.services.forEach(service => {
-        printContent += `<tr><td>${service.name}</td><td>${service.price}</td></tr>`;
-    });
-    printContent += `<tr><td>Total</td><td>${bill.total}</td></tr></table>`;
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`<html><head><title>Print Bill</title></head><body>${printContent}</body></html>`);
-    printWindow.document.close();
-    printWindow.print();
-    showPopupMessage("Bill printed successfully!");
-}
-
-function deleteBill(index) {
-    bills.splice(index, 1);
-    localStorage.setItem("bills", JSON.stringify(bills));
-    renderBillHistory();
-    showPopupMessage("Bill deleted successfully!");
-}
-
-function filterHistory() {
-    const searchQuery = document.getElementById('searchHistory').value.toLowerCase();
-    const filteredBills = bills.filter(bill =>
-        bill.customerName.toLowerCase().includes(searchQuery) ||
-        bill.date.toLowerCase().includes(searchQuery)
-    );
-    renderFilteredHistory(filteredBills);
-}
-
-function renderFilteredHistory(filteredBills) {
-    const billHistoryTable = document.getElementById('billHistory');
-    billHistoryTable.innerHTML = "";
-    filteredBills.forEach((bill, index) => {
-        const row = billHistoryTable.insertRow();
-        const snoCell = row.insertCell();
-        const nameCell = row.insertCell();
-        const dateCell = row.insertCell();
-        const amountCell = row.insertCell();
-        const printCell = row.insertCell();
-        const deleteCell = row.insertCell();
-        snoCell.textContent = index + 1;
-        nameCell.textContent = bill.customerName;
-        dateCell.textContent = bill.date;
-        amountCell.textContent = bill.total;
-        const printButton = document.createElement('button');
-        printButton.textContent = 'Print';
-        printButton.onclick = () => printBill(index);
-        printCell.appendChild(printButton);
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.onclick = () => deleteBill(index);
-        deleteCell.appendChild(deleteButton);
-    });
-}
-
-renderServiceButtons();
-renderBillHistory();
-document.addEventListener("DOMContentLoaded", function () {
     let selectedServices = [];
-    const serviceButtons = document.querySelectorAll("#serviceButtons button");
-    const amountInput = document.getElementById("amount");
-    const addServiceBtn = document.getElementById("addServiceBtn");
-    const selectedServicesTable = document.getElementById("selectedServices");
-    const totalAmountSpan = document.getElementById("totalAmount");
-    const billHistory = document.getElementById("billHistory");
-    
-    serviceButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            serviceButtons.forEach(btn => btn.style.opacity = "1");
-            this.style.opacity = "0.2";
-            amountInput.disabled = false;
+    let billHistory = JSON.parse(localStorage.getItem('billHistory')) || [];
+    let selectedServiceButton = null;
+
+    // DOM Elements
+    const serviceButtonsDiv = document.getElementById('serviceButtons');
+    const amountInput = document.getElementById('amount');
+    const addServiceBtn = document.getElementById('addServiceBtn');
+    const customerNameInput = document.getElementById('customerName');
+    const selectedServicesTbody = document.getElementById('selectedServices');
+    const totalAmountSpan = document.getElementById('totalAmount');
+    const billHistoryTbody = document.getElementById('billHistory');
+    const searchHistoryInput = document.getElementById('searchHistory');
+
+    // Initialize the page
+    renderServiceButtons();
+    renderBillHistory();
+
+    // Event Listeners
+    amountInput.addEventListener('input', function() {
+        if (this.value && selectedServiceButton) {
             addServiceBtn.disabled = false;
-            amountInput.value = "";
-            amountInput.focus();
-            amountInput.dataset.service = this.textContent;
-        });
+        } else {
+            addServiceBtn.disabled = true;
+        }
     });
 
-    addServiceBtn.addEventListener("click", function () {
-        const serviceName = amountInput.dataset.service;
+    // Functions
+    function renderServiceButtons() {
+        serviceButtonsDiv.innerHTML = '';
+        services.forEach(service => {
+            const button = document.createElement('button');
+            button.textContent = service.name;
+            button.className = 'service-btn';
+            button.onclick = () => selectService(service, button);
+            serviceButtonsDiv.appendChild(button);
+        });
+    }
+
+    function selectService(service, button) {
+        // Reset previously selected button
+        if (selectedServiceButton) {
+            selectedServiceButton.classList.remove('selected');
+        }
+
+        // Set new selected button
+        selectedServiceButton = button;
+        button.classList.add('selected');
+        
+        amountInput.value = service.defaultAmount;
+        amountInput.disabled = false;
+        amountInput.focus();
+    }
+
+    function addService() {
+        if (!selectedServiceButton) return;
+        
+        const serviceName = selectedServiceButton.textContent;
         const amount = parseFloat(amountInput.value);
-        if (!serviceName || isNaN(amount) || amount <= 0) return;
-        selectedServices.push({ serviceName, amount });
-        updateSelectedServicesTable();
-    });
+        
+        if (isNaN(amount)) {
+            alert('Please enter a valid amount');
+            return;
+        }
 
-    function updateSelectedServicesTable() {
-        selectedServicesTable.innerHTML = "";
+        selectedServices.push({ name: serviceName, amount: amount });
+        renderSelectedServices();
+        
+        // Reset selection
+        selectedServiceButton.classList.remove('selected');
+        selectedServiceButton = null;
+        amountInput.value = '';
+        amountInput.disabled = true;
+        addServiceBtn.disabled = true;
+    }
+
+    function renderSelectedServices() {
+        selectedServicesTbody.innerHTML = '';
         selectedServices.forEach((service, index) => {
-            let row = document.createElement("tr");
-            row.innerHTML = `<td>${service.serviceName}</td><td>₹${service.amount.toFixed(2)}</td>
-                             <td><button onclick="removeService(${index})">Remove</button></td>`;
-            selectedServicesTable.appendChild(row);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${service.name}</td>
+                <td>₹${service.amount.toFixed(2)}</td>
+                <td>
+                    <button class="action-btn" onclick="removeService(${index})">Remove</button>
+                </td>
+            `;
+            selectedServicesTbody.appendChild(row);
         });
+        calculateTotal();
     }
 
-    window.removeService = function (index) {
-        selectedServices.splice(index, 1);
-        updateSelectedServicesTable();
-    };
-
-    window.calculateTotal = function () {
-        let total = selectedServices.reduce((sum, item) => sum + item.amount, 0);
+    function calculateTotal() {
+        const total = selectedServices.reduce((sum, service) => sum + service.amount, 0);
         totalAmountSpan.textContent = total.toFixed(2);
-    };
+    }
 
-    window.printBill = function () {
-        let printWindow = window.open("", "", "width=600,height=800");
-        printWindow.document.write(`<h2 style='text-align:center; font-weight:bold;'>Kalaivani Hub</h2>`);
-        printWindow.document.write(`<p>Date: ${new Date().toLocaleString()}</p>`);
-        printWindow.document.write(`<table border='1' width='100%'><tr><th>Service</th><th>Amount</th></tr>`);
-        selectedServices.forEach(service => {
-            printWindow.document.write(`<tr><td>${service.serviceName}</td><td>₹${service.amount.toFixed(2)}</td></tr>`);
-        });
-        printWindow.document.write(`</table>`);
-        printWindow.print();
-    };
+    function saveBill() {
+        const customerName = customerNameInput.value.trim();
+        if (!customerName) {
+            alert('Please enter customer name');
+            return;
+        }
 
-    window.saveBill = function () {
-        let customerName = document.getElementById("customerName").value.trim();
-        if (!customerName || selectedServices.length === 0) return;
-        let total = selectedServices.reduce((sum, item) => sum + item.amount, 0);
-        let bill = {
+        if (selectedServices.length === 0) {
+            alert('Please add at least one service');
+            return;
+        }
+
+        const total = parseFloat(totalAmountSpan.textContent);
+        const newBill = {
             id: Date.now(),
-            name: customerName,
+            customerName,
             date: new Date().toLocaleString(),
-            total: total.toFixed(2),
-            services: [...selectedServices]
+            services: [...selectedServices],
+            total
         };
-        let bills = JSON.parse(localStorage.getItem("bills")) || [];
-        bills.push(bill);
-        localStorage.setItem("bills", JSON.stringify(bills));
-        updateBillHistory();
-    };
 
-    function updateBillHistory() {
-        billHistory.innerHTML = "";
-        let bills = JSON.parse(localStorage.getItem("bills")) || [];
-        bills.forEach((bill, index) => {
-            let row = document.createElement("tr");
-            row.innerHTML = `<td>${index + 1}</td><td>${bill.name}</td><td>${bill.date}</td>
-                             <td>₹${bill.total}</td>
-                             <td><button onclick="printSavedBill(${bill.id})">Print</button></td>
-                             <td><button onclick="deleteBill(${bill.id})">Delete</button></td>`;
-            billHistory.appendChild(row);
+        billHistory.unshift(newBill);
+        localStorage.setItem('billHistory', JSON.stringify(billHistory));
+        
+        // Reset form
+        selectedServices = [];
+        renderSelectedServices();
+        customerNameInput.value = '';
+        totalAmountSpan.textContent = '0';
+        
+        renderBillHistory();
+        alert('Bill saved successfully!');
+    }
+
+    function printBill() {
+        if (selectedServices.length === 0) {
+            alert('No services to print');
+            return;
+        }
+        
+        const customerName = customerNameInput.value.trim() || 'Walk-in Customer';
+        const total = parseFloat(totalAmountSpan.textContent);
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Bill Receipt</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { text-align: center; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    .total { font-weight: bold; }
+                    .footer { margin-top: 30px; text-align: center; }
+                </style>
+            </head>
+            <body>
+                <h1>Kalaivani Hub</h1>
+                <p><strong>Customer:</strong> ${customerName}</p>
+                <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${selectedServices.map(service => `
+                            <tr>
+                                <td>${service.name}</td>
+                                <td>₹${service.amount.toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                        <tr class="total">
+                            <td>Total</td>
+                            <td>₹${total.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="footer">
+                    <p>Thank you for your business!</p>
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function printHistoryBill(billId) {
+        const bill = billHistory.find(b => b.id === billId);
+        if (!bill) return;
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Bill Receipt</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { text-align: center; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    .total { font-weight: bold; }
+                    .footer { margin-top: 30px; text-align: center; }
+                </style>
+            </head>
+            <body>
+                <h1>Kalaivani Hub</h1>
+                <p><strong>Customer:</strong> ${bill.customerName}</p>
+                <p><strong>Date:</strong> ${bill.date}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${bill.services.map(service => `
+                            <tr>
+                                <td>${service.name}</td>
+                                <td>₹${service.amount.toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                        <tr class="total">
+                            <td>Total</td>
+                            <td>₹${bill.total.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="footer">
+                    <p>Thank you for your business!</p>
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function deleteBill(billId) {
+        if (confirm('Are you sure you want to delete this bill?')) {
+            billHistory = billHistory.filter(bill => bill.id !== billId);
+            localStorage.setItem('billHistory', JSON.stringify(billHistory));
+            renderBillHistory();
+            alert('Bill deleted successfully!');
+        }
+    }
+
+    function renderBillHistory() {
+        billHistoryTbody.innerHTML = '';
+        billHistory.forEach((bill, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${bill.customerName}</td>
+                <td>${bill.date}</td>
+                <td>₹${bill.total.toFixed(2)}</td>
+                <td><button class="action-btn" onclick="printHistoryBill(${bill.id})">Print</button></td>
+                <td><button class="action-btn" onclick="deleteBill(${bill.id})">Delete</button></td>
+            `;
+            billHistoryTbody.appendChild(row);
         });
     }
 
-    window.printSavedBill = function (id) {
-        let bills = JSON.parse(localStorage.getItem("bills")) || [];
-        let bill = bills.find(b => b.id === id);
-        if (!bill) return;
-        let printWindow = window.open("", "", "width=600,height=800");
-        printWindow.document.write(`<h2 style='text-align:center; font-weight:bold;'>Kalaivani Hub</h2>`);
-        printWindow.document.write(`<p>Date: ${bill.date}</p>`);
-        printWindow.document.write(`<p>Customer: ${bill.name}</p>`);
-        printWindow.document.write(`<table border='1' width='100%'><tr><th>Service</th><th>Amount</th></tr>`);
-        bill.services.forEach(service => {
-            printWindow.document.write(`<tr><td>${service.serviceName}</td><td>₹${service.amount.toFixed(2)}</td></tr>`);
+    function filterHistory() {
+        const searchTerm = searchHistoryInput.value.toLowerCase();
+        const rows = billHistoryTbody.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+            const name = row.cells[1].textContent.toLowerCase();
+            const date = row.cells[2].textContent.toLowerCase();
+            if (name.includes(searchTerm) || date.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
         });
-        printWindow.document.write(`<tr><td><b>Total</b></td><td><b>₹${bill.total}</b></td></tr>`);
-        printWindow.document.write(`</table>`);
-        printWindow.print();
-    };
+    }
 
-    window.deleteBill = function (id) {
-        let bills = JSON.parse(localStorage.getItem("bills")) || [];
-        bills = bills.filter(b => b.id !== id);
-        localStorage.setItem("bills", JSON.stringify(bills));
-        updateBillHistory();
+    // Make functions available globally
+    window.addService = addService;
+    window.calculateTotal = calculateTotal;
+    window.saveBill = saveBill;
+    window.printBill = printBill;
+    window.printHistoryBill = printHistoryBill;
+    window.deleteBill = deleteBill;
+    window.removeService = function(index) {
+        selectedServices.splice(index, 1);
+        renderSelectedServices();
+        calculateTotal();
     };
-
-    updateBillHistory();
+    window.filterHistory = filterHistory;
 });
