@@ -169,7 +169,8 @@
         </nav>
         <!-- Navbar End -->
 
-        <div class="billing-page-container">
+        <div class="billing-container">
+            <!-- Billing Section -->
             <div class="billing" id="billing">
                 <h2>Billing Page</h2>
                 <div id="serviceButtons"></div>
@@ -192,7 +193,34 @@
                 <button onclick="printBill(-1)">Print Bill</button>
                 <button onclick="exportToCSV()">Export to CSV</button>
             </div>
-        </div>        
+    
+            <!-- Service Management Section -->
+            <div class="services" id="services">
+                <h2>Manage Services</h2>
+                <input type="text" id="newService" placeholder="Enter New Service Name">
+                <button onclick="addNewService()">Add Service</button>
+                <ul id="serviceList"></ul>
+            </div>
+        </div>
+    
+        <!-- Full-Screen Billing History Section -->
+        <div class="history" id="dashboard">
+            <h2>Billing History</h2>
+            <input type="text" id="searchHistory" placeholder="Search by Name or Date" oninput="filterHistory()">
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Customer Name</th>
+                        <th>Date</th>
+                        <th>Bill Amount</th>
+                        <th>Print</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="billHistory"></tbody>
+            </table>
+        </div>       
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
