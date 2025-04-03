@@ -168,7 +168,30 @@
         </nav>
         <!-- Navbar End -->
 
-        
+        <div class="billing-page-container">
+            <div class="billing" id="billing">
+                <h2>Billing Page</h2>
+                <div id="serviceButtons"></div>
+                <input type="number" id="amount" placeholder="Enter Amount" disabled>
+                <button onclick="addService()" id="addServiceBtn" disabled>Add</button>
+                <button onclick="calculateTotal()">Calculate Total</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="selectedServices"></tbody>
+                </table>
+                <h3>Total: ₹<span id="totalAmount">0</span></h3>
+                <input type="text" id="customerName" placeholder="Enter Customer Name">
+                <button onclick="saveBill()">Save Bill</button>
+                <button onclick="printBill(-1)">Print Bill</button>
+                <button onclick="exportToCSV()">Export to CSV</button>
+            </div>
+        </div>        
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
