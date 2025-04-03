@@ -1,0 +1,87 @@
+.dashboard {
+    /* display: flex; */
+    /* flex-wrap: wrap; */
+    flex: 1;
+    /* justify-content: space-between; */
+    max-height: 90vh;
+    padding: 20px;
+    background-color: #6bbaec19;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-height: 100vh;
+    
+}
+.card {
+    background: #6bbaecb5;
+    padding: 30px;
+    margin: 10px;
+    border-radius: 10px;
+    height: 290px;
+    box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.3);
+}
+
+
+.card {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    align-items: center;
+    height: 350px !important;
+}
+
+#barChart{
+    margin-left: 3vw;
+}
+#pieChart {
+    max-width: 100% !important;
+    /* width: 250px !important; */
+    height: 290px !important;
+}
+
+
+#topCategories {
+    text-align: left;
+    font-size: 14px;
+}
+
+.big-text {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.sale-mini-report, .services-mini-report{
+    display: flex;
+    align-items: center;
+}
+
+.big-text {
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+}
+
+.service-count, .sales-amount{
+    font-size: 40px;
+    font-weight: 800;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.tot-service{
+    margin-top: 30px;
+    font-size: 40px;
+}
+
+.pending-completed-count{
+    color: black;
+    font-size: 32px;
+    font-weight: 600;
+    
+}
+
+.completed-count{
+    text-shadow: 2px 2px 4px rgb(255, 255, 255);
+}
